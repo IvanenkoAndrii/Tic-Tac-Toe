@@ -1,0 +1,207 @@
+.gameInfo {
+    background: linear-gradient(135deg, var(--color-bg-secondary) 0%, #e9ecef 100%);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.status {
+    margin-bottom: var(--spacing-lg);
+}
+
+.statusMessage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    text-align: center;
+    min-height: 60px;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.current {
+    background-color: rgba(74, 111, 165, 0.1);
+    color: var(--color-primary);
+    border: 2px solid var(--color-primary);
+}
+
+.winner {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(76, 175, 80, 0.1) 100%);
+    color: var(--color-success);
+    border: 2px solid var(--color-success);
+    animation: celebration 1s infinite;
+}
+
+.draw {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.2) 0%, rgba(255, 152, 0, 0.1) 100%);
+    color: var(--color-warning);
+    border: 2px solid var(--color-warning);
+}
+
+@keyframes celebration {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.winnerSymbol {
+    font-size: 2rem;
+    animation: bounce 0.5s infinite alternate;
+}
+
+.drawSymbol {
+    font-size: 2rem;
+}
+
+.playerSymbol {
+    font-size: 2rem;
+    font-weight: bold;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.X {
+    color: var(--color-x);
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.O {
+    color: var(--color-o);
+    background-color: rgba(78, 205, 196, 0.1);
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--spacing-md);
+    background-color: white;
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s;
+}
+
+.stat:hover {
+    background-color: var(--color-bg-secondary);
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xs);
+    text-align: center;
+}
+
+.statValue {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.controlButton {
+    flex: 1;
+    min-width: 120px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+
+.controlButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.controlButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.controlButton.secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.controlButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.buttonIcon {
+    font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .statusMessage {
+        font-size: 1.5rem;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .playerSymbol {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .controls {
+        flex-direction: column;
+    }
+
+    .controlButton {
+        width: 100%;
+    }
+}
