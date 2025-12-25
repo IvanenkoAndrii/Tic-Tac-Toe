@@ -7,6 +7,10 @@ interface GameInfoProps {
     winner: Player | null;
     isDraw: boolean;
     moveCount: number;
+    playerStats: {
+        X: { wins: number; losses: number; draws: number; totalMoves: number };
+        O: { wins: number; losses: number; draws: number; totalMoves: number };
+    };
     onRestart: () => void;
     onReset?: () => void;
 }
@@ -16,6 +20,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
                                                winner,
                                                isDraw,
                                                moveCount,
+                                               playerStats,
                                                onRestart,
                                                onReset,
                                            }) => {
@@ -40,8 +45,8 @@ const GameInfo: React.FC<GameInfoProps> = ({
             <>
                 <span>Хід гравця:</span>
                 <span className={`${styles.playerSymbol} ${styles[currentPlayer]}`}>
-          {currentPlayer}
-        </span>
+                    {currentPlayer}
+                </span>
             </>
         );
     };
@@ -67,12 +72,16 @@ const GameInfo: React.FC<GameInfoProps> = ({
 
                     <div className={styles.stat}>
                         <span className={styles.statLabel}>Гравець X:</span>
-                        <span className={styles.statValue}>0 перемог</span>
+                        <span className={styles.statValue}>
+                            {playerStats.X.wins} перемог
+                        </span>
                     </div>
 
                     <div className={styles.stat}>
                         <span className={styles.statLabel}>Гравець O:</span>
-                        <span className={styles.statValue}>0 перемог</span>
+                        <span className={styles.statValue}>
+                            {playerStats.O.wins} перемог
+                        </span>
                     </div>
                 </div>
             </div>
@@ -94,7 +103,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
                         aria-label="Скинути рахунок"
                     >
                         <span className={styles.buttonIcon}>📊</span>
-                        <span>Скинути рахунок</span>
+                        <span>Скинути статистику</span>
                     </button>
                 )}
 

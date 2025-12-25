@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '../../components';
+import { useGameStorage } from '../../hooks';
 import styles from './ResultsPage.module.css';
 import { Player } from '../../types/game.types';
 
@@ -16,6 +17,9 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
                                                      onPlayAgain,
                                                      onReturnToMenu,
                                                  }) => {
+    const { getStats } = useGameStorage();
+    const stats = getStats();
+
     const getResultMessage = () => {
         if (isDraw) {
             return 'Нічия!';
@@ -49,27 +53,35 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
                             <div className={styles.statLabel}>Нічия</div>
                         </div>
                         <div className={styles.statCard}>
-                            <div className={styles.statValue}>0</div>
-                            <div className={styles.statLabel}>Загальних ходів</div>
+                            <div className={styles.statValue}>{stats.totalGames}</div>
+                            <div className={styles.statLabel}>Всього ігор</div>
                         </div>
                         <div className={styles.statCard}>
-                            <div className={styles.statValue}>0 хв</div>
-                            <div className={styles.statLabel}>Час гри</div>
+                            <div className={styles.statValue}>
+                                {stats.xWins}:{stats.oWins}
+                            </div>
+                            <div className={styles.statLabel}>X:O перемоги</div>
                         </div>
                     </div>
 
                     <div className={styles.scoreboard}>
-                        <h3>Результати гравців</h3>
+                        <h3>Загальна статистика</h3>
                         <div className={styles.scoreList}>
                             <div className={styles.scoreItem}>
                                 <span className={`${styles.playerSymbol} ${styles.playerX}`}>X</span>
                                 <span className={styles.playerName}>Гравець X</span>
-                                <span className={styles.playerScore}>0 перемог</span>
+                                <div className={styles.playerStats}>
+                                    <span>Перемоги: {stats.xWins}</span>
+                                    <span>Процент: {stats.xWinPercentage}%</span>
+                                </div>
                             </div>
                             <div className={styles.scoreItem}>
                                 <span className={`${styles.playerSymbol} ${styles.playerO}`}>O</span>
                                 <span className={styles.playerName}>Гравець O</span>
-                                <span className={styles.playerScore}>0 перемог</span>
+                                <div className={styles.playerStats}>
+                                    <span>Перемоги: {stats.oWins}</span>
+                                    <span>Процент: {stats.oWinPercentage}%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -92,7 +104,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
                 </div>
 
                 <div className={styles.footerNote}>
-                    <p>Гра завершена. Результати буде збережено в історії.</p>
+                    <p>Результати збережено в історії. Всього зіграно ігор: {stats.totalGames}</p>
                 </div>
             </div>
         </div>
