@@ -1,5 +1,6 @@
 import React from 'react';
 import { Player } from '../../../types/game.types';
+import { getMovesText } from '../../../utils/textUtils';
 import styles from './GameInfo.module.css';
 
 interface GameInfoProps {
@@ -12,7 +13,8 @@ interface GameInfoProps {
         O: { wins: number; losses: number; draws: number; totalMoves: number };
     };
     onRestart: () => void;
-    onReset?: () => void;
+    onResetStats?: () => void;
+    onSettingsOpen?: () => void;
 }
 
 const GameInfo: React.FC<GameInfoProps> = ({
@@ -22,7 +24,8 @@ const GameInfo: React.FC<GameInfoProps> = ({
                                                moveCount,
                                                playerStats,
                                                onRestart,
-                                               onReset,
+                                               onResetStats,
+                                               onSettingsOpen,
                                            }) => {
     const getStatusMessage = () => {
         if (winner) {
@@ -45,8 +48,8 @@ const GameInfo: React.FC<GameInfoProps> = ({
             <>
                 <span>Хід гравця:</span>
                 <span className={`${styles.playerSymbol} ${styles[currentPlayer]}`}>
-                    {currentPlayer}
-                </span>
+          {currentPlayer}
+        </span>
             </>
         );
     };
@@ -67,21 +70,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
                 <div className={styles.stats}>
                     <div className={styles.stat}>
                         <span className={styles.statLabel}>Хід №:</span>
-                        <span className={styles.statValue}>{moveCount}</span>
-                    </div>
-
-                    <div className={styles.stat}>
-                        <span className={styles.statLabel}>Гравець X:</span>
-                        <span className={styles.statValue}>
-                            {playerStats.X.wins} перемог
-                        </span>
-                    </div>
-
-                    <div className={styles.stat}>
-                        <span className={styles.statLabel}>Гравець O:</span>
-                        <span className={styles.statValue}>
-                            {playerStats.O.wins} перемог
-                        </span>
+                        <span className={styles.statValue}>{getMovesText(moveCount)}</span>
                     </div>
                 </div>
             </div>
@@ -96,11 +85,11 @@ const GameInfo: React.FC<GameInfoProps> = ({
                     <span>Нова гра</span>
                 </button>
 
-                {onReset && (
+                {onResetStats && (
                     <button
                         className={`${styles.controlButton} ${styles.secondary}`}
-                        onClick={onReset}
-                        aria-label="Скинути рахунок"
+                        onClick={onResetStats}
+                        aria-label="Скинути статистику"
                     >
                         <span className={styles.buttonIcon}>📊</span>
                         <span>Скинути статистику</span>
@@ -109,7 +98,7 @@ const GameInfo: React.FC<GameInfoProps> = ({
 
                 <button
                     className={`${styles.controlButton} ${styles.secondary}`}
-                    onClick={() => console.log('Налаштування')}
+                    onClick={onSettingsOpen}
                     aria-label="Відкрити налаштування"
                 >
                     <span className={styles.buttonIcon}>⚙️</span>

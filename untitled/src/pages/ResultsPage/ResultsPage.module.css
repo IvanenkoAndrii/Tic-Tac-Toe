@@ -11,7 +11,7 @@
     background-color: white;
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
-    max-width: 600px;
+    max-width: 700px;
     width: 100%;
     box-shadow: var(--shadow-lg);
     text-align: center;
@@ -35,7 +35,17 @@
 .resultTitle {
     font-size: 2.5rem;
     color: var(--color-primary);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.boardSizeInfo {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    margin-top: var(--spacing-sm);
+}
+
+.boardSizeInfo strong {
+    color: var(--color-primary);
 }
 
 .resultDetails {
@@ -54,6 +64,9 @@
     padding: var(--spacing-lg);
     border-radius: var(--radius-md);
     transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .statCard:hover {
@@ -61,7 +74,7 @@
 }
 
 .statValue {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: bold;
     color: var(--color-primary);
     margin-bottom: var(--spacing-xs);
@@ -70,67 +83,76 @@
 .statLabel {
     color: var(--color-text-muted);
     font-size: 0.9rem;
+    text-align: center;
 }
 
-.scoreboard {
-    text-align: left;
+/* Видаляємо стилі для scoreboard, оскільки він більше не використовується */
+
+.historySection {
+    margin-top: var(--spacing-xl);
 }
 
-.scoreboard h3 {
+.historySection h3 {
     color: var(--color-primary);
     margin-bottom: var(--spacing-md);
     text-align: center;
 }
 
-.scoreList {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.scoreItem {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
-    background-color: var(--color-bg-secondary);
+.historyList {
+    min-height: 120px;
+    max-height: 200px;
+    overflow-y: auto;
     border-radius: var(--radius-md);
-    transition: background-color 0.2s;
+    border: 1px solid #dee2e6;
 }
 
-.scoreItem:hover {
-    background-color: #e9ecef;
-}
-
-.playerSymbol {
-    width: 40px;
-    height: 40px;
-    display: flex;
+.historyItem {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 1.2rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.2s;
+    gap: var(--spacing-sm);
 }
 
-.playerX {
-    background-color: var(--color-x);
-    color: white;
+.historyItem:last-child {
+    border-bottom: none;
 }
 
-.playerO {
-    background-color: var(--color-o);
-    color: white;
+.historyItem:hover {
+    background-color: var(--color-bg-secondary);
 }
 
-.playerName {
-    flex: 1;
+.gameDate {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.gameResult {
     font-weight: 500;
+    color: var(--color-primary);
+    text-align: center;
 }
 
-.playerScore {
-    font-weight: bold;
-    color: var(--color-primary);
+.gameMoves {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+.gameBoardSize {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    font-weight: 600;
+}
+
+.noHistory {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding: var(--spacing-xl);
 }
 
 .actions {
@@ -152,4 +174,5 @@
     font-size: 0.9rem;
     border-top: 1px solid #dee2e6;
     padding-top: var(--spacing-md);
+    text-align: center;
 }

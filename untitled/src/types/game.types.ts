@@ -3,6 +3,10 @@ export type CellValue = Player | null;
 export type BoardState = CellValue[][];
 export type GameStatus = 'playing' | 'won' | 'draw';
 
+export interface GameSettings {
+    boardSize: number;
+}
+
 export interface GameState {
     board: BoardState;
     currentPlayer: Player;
@@ -11,13 +15,7 @@ export interface GameState {
     status: GameStatus;
     moveCount: number;
     winningCells: [number, number][];
-}
-
-export interface GameHistoryItem {
-    board: BoardState;
-    player: Player;
-    position: [number, number];
-    moveNumber: number;
+    settings: GameSettings;
 }
 
 export interface GameResult {
@@ -26,6 +24,7 @@ export interface GameResult {
     finalBoard: BoardState;
     date: string;
     moves: number;
+    settings: GameSettings;
 }
 
 export interface PlayerStats {
@@ -33,6 +32,15 @@ export interface PlayerStats {
     losses: number;
     draws: number;
     totalMoves: number;
+}
+
+export interface GameStats {
+    totalGames: number;
+    xWins: number;
+    oWins: number;
+    draws: number;
+    xWinPercentage: string;
+    oWinPercentage: string;
 }
 
 export interface GameInfoProps {
@@ -45,15 +53,17 @@ export interface GameInfoProps {
         O: PlayerStats;
     };
     onRestart: () => void;
-    onReset?: () => void;
+    onResetStats?: () => void;
+    onSettingsOpen?: () => void;
 }
 
 export interface ButtonProps {
     children: React.ReactNode;
-    onClick: () => void;
+    onClick?: () => void;
     variant?: 'primary' | 'secondary' | 'success' | 'danger';
     size?: 'small' | 'medium' | 'large';
     disabled?: boolean;
+    type?: 'button' | 'submit' | 'reset';
 }
 
 export interface CellProps {
@@ -62,4 +72,5 @@ export interface CellProps {
     col: number;
     onClick: (row: number, col: number) => void;
     isWinningCell?: boolean;
+    disabled?: boolean;
 }

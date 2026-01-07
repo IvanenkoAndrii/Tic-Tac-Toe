@@ -1,0 +1,154 @@
+.statisticsPage {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-xl) 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    gap: var(--spacing-md);
+}
+
+.backButton {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s;
+}
+
+.backButton:hover {
+    background-color: var(--color-bg-secondary);
+}
+
+.title {
+    color: var(--color-primary);
+    font-size: 2rem;
+    margin: 0;
+}
+
+.statsContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+    .statsContainer {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.statCard, .historyCard {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.statCard h3, .historyCard h3 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.statGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.statLabel {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-xs);
+    text-align: center;
+}
+
+.statValue {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.statPercentage {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-xs);
+}
+
+.historyList {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.historyItem {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    background-color: var(--color-bg-secondary);
+    border-radius: var(--radius-sm);
+    transition: background-color 0.2s;
+    gap: var(--spacing-sm);
+}
+
+.historyItem:hover {
+    background-color: #e9ecef;
+}
+
+.historyItem:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+.gameDate {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.gameResult {
+    font-weight: 500;
+    color: var(--color-primary);
+    text-align: center;
+}
+
+.gameMoves {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+.gameBoardSize {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    text-align: right;
+    font-weight: 600;
+}
+
+.noHistory {
+    text-align: center;
+    color: var(--color-text-muted);
+    font-style: italic;
+    padding: var(--spacing-xl);
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+}
