@@ -1,12 +1,14 @@
 import React from 'react';
 import { Button } from '../../components';
 import { useGameStorage } from '../../hooks';
+import { getMovesText } from '../../utils/textUtils';
 import styles from './ResultsPage.module.css';
 import { Player } from '../../types/game.types';
 
 interface ResultsPageProps {
     winner: Player | null;
     isDraw: boolean;
+    moveCount: number;
     onPlayAgain: () => void;
     onReturnToMenu: () => void;
 }
@@ -14,11 +16,11 @@ interface ResultsPageProps {
 const ResultsPage: React.FC<ResultsPageProps> = ({
                                                      winner,
                                                      isDraw,
+                                                     moveCount,
                                                      onPlayAgain,
                                                      onReturnToMenu,
                                                  }) => {
-    const { getStats } = useGameStorage();
-    const stats = getStats();
+    const { gameHistory } = useGameStorage();
 
     const getResultMessage = () => {
         if (isDraw) {
@@ -34,57 +36,85 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
         return '✅';
     };
 
+    const calculateWinnerMoves = () => {
+        if (!winner) return Math.floor(moveCount / 2);
+        return winner === 'X' ? Math.ceil(moveCount / 2) : Math.floor(moveCount / 2);
+    };
+
+    const calculateLoserMoves = () => {
+        if (!winner) return Math.ceil(moveCount / 2);
+        return winner === 'X' ? Math.floor(moveCount / 2) : Math.ceil(moveCount / 2);
+    };
+
+    const lastGame = gameHistory.length > 0 ? gameHistory[gameHistory.length - 1] : null;
+    const boardSize = lastGame?.settings?.boardSize || 3;
+
     return (
         <div className={styles.resultsPage}>
             <div className={styles.resultCard}>
                 <div className={styles.resultHeader}>
                     <div className={styles.resultIcon}>{getResultIcon()}</div>
                     <h1 className={styles.resultTitle}>{getResultMessage()}</h1>
+                    <div className={styles.boardSizeInfo}>
+                        Гра на полі: <strong>{boardSize}×{boardSize}</strong>
+                    </div>
                 </div>
 
                 <div className={styles.resultDetails}>
                     <div className={styles.statsGrid}>
                         <div className={styles.statCard}>
-                            <div className={styles.statValue}>{winner || '—'}</div>
-                            <div className={styles.statLabel}>Переможець</div>
+                            <div className={styles.statValue}>{isDraw ? 'Нічия' : winner || '—'}</div>
+                            <div className={styles.statLabel}>Результат</div>
                         </div>
                         <div className={styles.statCard}>
-                            <div className={styles.statValue}>{isDraw ? 'Так' : 'Ні'}</div>
-                            <div className={styles.statLabel}>Нічия</div>
-                        </div>
-                        <div className={styles.statCard}>
-                            <div className={styles.statValue}>{stats.totalGames}</div>
-                            <div className={styles.statLabel}>Всього ігор</div>
+                            <div className={styles.statValue}>{getMovesText(moveCount)}</div>
+                            <div className={styles.statLabel}>Всього ходів</div>
                         </div>
                         <div className={styles.statCard}>
                             <div className={styles.statValue}>
-                                {stats.xWins}:{stats.oWins}
+                                {getMovesText(calculateWinnerMoves())}
                             </div>
-                            <div className={styles.statLabel}>X:O перемоги</div>
+                            <div className={styles.statLabel}>
+                                {winner ? `Ходів ${winner}` : 'Ходів на гравця'}
+                            </div>
+                        </div>
+                        <div className={styles.statCard}>
+                            <div className={styles.statValue}>
+                                {getMovesText(calculateLoserMoves())}
+                            </div>
+                            <div className={styles.statLabel}>
+                                {winner ? `Ходів ${winner === 'X' ? 'O' : 'X'}` : 'Ходів на гравця'}
+                            </div>
                         </div>
                     </div>
 
-                    <div className={styles.scoreboard}>
-                        <h3>Загальна статистика</h3>
-                        <div className={styles.scoreList}>
-                            <div className={styles.scoreItem}>
-                                <span className={`${styles.playerSymbol} ${styles.playerX}`}>X</span>
-                                <span className={styles.playerName}>Гравець X</span>
-                                <div className={styles.playerStats}>
-                                    <span>Перемоги: {stats.xWins}</span>
-                                    <span>Процент: {stats.xWinPercentage}%</span>
-                                </div>
-                            </div>
-                            <div className={styles.scoreItem}>
-                                <span className={`${styles.playerSymbol} ${styles.playerO}`}>O</span>
-                                <span className={styles.playerName}>Гравець O</span>
-                                <div className={styles.playerStats}>
-                                    <span>Перемоги: {stats.oWins}</span>
-                                    <span>Процент: {stats.oWinPercentage}%</span>
-                                </div>
+                    {gameHistory.length > 0 && (
+                        <div className={styles.historySection}>
+                            <h3>Останні ігри</h3>
+                            <div className={styles.historyList}>
+                                {gameHistory.slice(-5).reverse().map((game, index) => (
+                                    <div key={index} className={styles.historyItem}>
+                    <span className={styles.gameDate}>
+                      {new Date(game.date).toLocaleDateString('uk-UA', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                      })}
+                    </span>
+                                        <span className={styles.gameResult}>
+                      {game.isDraw ? 'Нічия' : `Переміг ${game.winner}`}
+                    </span>
+                                        <span className={styles.gameMoves}>
+                      {getMovesText(game.moves)}
+                    </span>
+                                        <span className={styles.gameBoardSize}>
+                      {game.settings?.boardSize || 3}×{game.settings?.boardSize || 3}
+                    </span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className={styles.actions}>
@@ -93,7 +123,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
                         size="large"
                         onClick={onPlayAgain}
                     >
-                        Грати знову
+                        Грати ще раз
                     </Button>
                     <Button
                         variant="secondary"
@@ -104,7 +134,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({
                 </div>
 
                 <div className={styles.footerNote}>
-                    <p>Результати збережено в історії. Всього зіграно ігор: {stats.totalGames}</p>
+                    <p>Результати збережено в історії.</p>
                 </div>
             </div>
         </div>

@@ -8,6 +8,7 @@ const Button: React.FC<ButtonProps> = ({
                                            variant = 'primary',
                                            size = 'medium',
                                            disabled = false,
+                                           type = 'button',
                                        }) => {
     const buttonClasses = [
         styles.button,
@@ -18,6 +19,7 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <button
+            type={type}
             className={buttonClasses}
             onClick={onClick}
             disabled={disabled}

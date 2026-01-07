@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { Layout } from './components';
-import { StartPage, GamePage, ResultsPage } from './pages';
+import {
+  StartPage,
+  GamePage,
+  ResultsPage,
+  StatisticsPage,
+  SettingsPage
+} from './pages';
 import { GameResult } from './types/game.types';
 import './styles/globals.css';
 import './styles/theme.css';
 
-type Page = 'start' | 'game' | 'results';
+type Page = 'start' | 'game' | 'results' | 'statistics' | 'settings';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('start');
@@ -13,6 +19,8 @@ const App: React.FC = () => {
 
   const handleStartGame = () => setCurrentPage('game');
   const handleReturnToMenu = () => setCurrentPage('start');
+  const handleOpenSettings = () => setCurrentPage('settings');
+  const handleOpenStatistics = () => setCurrentPage('statistics');
 
   const handleGameEnd = (result: GameResult) => {
     setGameResult(result);
@@ -24,7 +32,13 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (currentPage) {
       case 'start':
-        return <StartPage onStartGame={handleStartGame} />;
+        return (
+            <StartPage
+                onStartGame={handleStartGame}
+                onOpenSettings={handleOpenSettings}
+                onOpenHistory={handleOpenStatistics}
+            />
+        );
       case 'game':
         return (
             <GamePage
@@ -37,12 +51,31 @@ const App: React.FC = () => {
             <ResultsPage
                 winner={gameResult?.winner || null}
                 isDraw={gameResult?.isDraw || false}
+                moveCount={gameResult?.moves || 0}
                 onPlayAgain={handlePlayAgain}
                 onReturnToMenu={handleReturnToMenu}
             />
         );
+      case 'statistics':
+        return (
+            <StatisticsPage
+                onReturn={handleReturnToMenu}
+            />
+        );
+      case 'settings':
+        return (
+            <SettingsPage
+                onReturn={handleReturnToMenu}
+            />
+        );
       default:
-        return <StartPage onStartGame={handleStartGame} />;
+        return (
+            <StartPage
+                onStartGame={handleStartGame}
+                onOpenSettings={handleOpenSettings}
+                onOpenHistory={handleOpenStatistics}
+            />
+        );
     }
   };
 

@@ -1,48 +1,119 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
     GameState,
     BoardState,
     Player,
-    GameHistoryItem,
     GameResult,
-    PlayerStats
+    PlayerStats,
+    GameSettings
 } from '../types/game.types';
 
-const INITIAL_BOARD: BoardState = Array(3).fill(null).map(() => Array(3).fill(null));
-
-const WINNING_COMBINATIONS = [
-
+const WINNING_COMBINATIONS_3x3 = [
     [[0, 0], [0, 1], [0, 2]],
     [[1, 0], [1, 1], [1, 2]],
     [[2, 0], [2, 1], [2, 2]],
-
     [[0, 0], [1, 0], [2, 0]],
     [[0, 1], [1, 1], [2, 1]],
     [[0, 2], [1, 2], [2, 2]],
-
     [[0, 0], [1, 1], [2, 2]],
     [[0, 2], [1, 1], [2, 0]],
 ];
 
-export const useGameLogic = () => {
-    const [gameState, setGameState] = useState<GameState>({
-        board: INITIAL_BOARD,
+const DEFAULT_SETTINGS: GameSettings = {
+    boardSize: 3,
+};
+
+const PLAYER_STATS_STORAGE_KEY = 'tic-tac-toe-player-stats';
+
+type PlayersStats = {
+    X: PlayerStats;
+    O: PlayerStats;
+};
+
+export const useGameLogic = (settings: GameSettings = DEFAULT_SETTINGS) => {
+    const createInitialBoard = (size: number): BoardState => {
+        return Array(size).fill(null).map(() => Array(size).fill(null));
+    };
+
+    const getWinningCombinations = (size: number): number[][][] => {
+        if (size === 3) return WINNING_COMBINATIONS_3x3;
+
+        const combinations: number[][][] = [];
+
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j <= size - 3; j++) {
+                combinations.push([
+                    [i, j], [i, j + 1], [i, j + 2]
+                ]);
+            }
+        }
+
+        for (let i = 0; i <= size - 3; i++) {
+            for (let j = 0; j < size; j++) {
+                combinations.push([
+                    [i, j], [i + 1, j], [i + 2, j]
+                ]);
+            }
+        }
+
+        for (let i = 0; i <= size - 3; i++) {
+            for (let j = 0; j <= size - 3; j++) {
+                combinations.push([
+                    [i, j], [i + 1, j + 1], [i + 2, j + 2]
+                ]);
+            }
+        }
+
+        for (let i = 0; i <= size - 3; i++) {
+            for (let j = 2; j < size; j++) {
+                combinations.push([
+                    [i, j], [i + 1, j - 1], [i + 2, j - 2]
+                ]);
+            }
+        }
+
+        return combinations;
+    };
+
+    const [gameState, setGameState] = useState<GameState>(() => ({
+        board: createInitialBoard(settings.boardSize),
         currentPlayer: 'X',
         winner: null,
         isDraw: false,
         status: 'playing',
         moveCount: 0,
         winningCells: [],
+        settings,
+    }));
+
+    const [playerStats, setPlayerStats] = useState<PlayersStats>(() => {
+        const savedStats = localStorage.getItem(PLAYER_STATS_STORAGE_KEY);
+        if (savedStats) {
+            try {
+                return JSON.parse(savedStats);
+            } catch {
+                console.error('Помилка завантаження статистики гравців');
+            }
+        }
+        return {
+            X: { wins: 0, losses: 0, draws: 0, totalMoves: 0 },
+            O: { wins: 0, losses: 0, draws: 0, totalMoves: 0 },
+        };
     });
 
-    const [history, setHistory] = useState<GameHistoryItem[]>([]);
-    const [playerStats, setPlayerStats] = useState({
-        X: { wins: 0, losses: 0, draws: 0, totalMoves: 0 } as PlayerStats,
-        O: { wins: 0, losses: 0, draws: 0, totalMoves: 0 } as PlayerStats,
-    });
+    useEffect(() => {
+        localStorage.setItem(PLAYER_STATS_STORAGE_KEY, JSON.stringify(playerStats));
+    }, [playerStats]);
+
+    useEffect(() => {
+        restartGame();
+    }, [settings.boardSize]);
 
     const checkWinner = useCallback((board: BoardState, row: number, col: number, player: Player): [Player | null, [number, number][]] => {
-        for (const combination of WINNING_COMBINATIONS) {
+        const size = board.length;
+        const combinations = getWinningCombinations(size);
+
+        for (const combination of combinations) {
             const [[r1, c1], [r2, c2], [r3, c3]] = combination;
 
             if (board[r1][c1] === player &&
@@ -68,20 +139,10 @@ export const useGameLogic = () => {
             newBoard[row][col] = prev.currentPlayer;
 
             const [winner, winningCells] = checkWinner(newBoard, row, col, prev.currentPlayer);
-
             const isDraw = !winner && checkDraw(newBoard);
 
-            const historyItem: GameHistoryItem = {
-                board: JSON.parse(JSON.stringify(newBoard)),
-                player: prev.currentPlayer,
-                position: [row, col],
-                moveNumber: prev.moveCount + 1,
-            };
-
-            setHistory(prevHistory => [...prevHistory, historyItem]);
-
             if (winner || isDraw) {
-                setPlayerStats(prevStats => {
+                setPlayerStats((prevStats: PlayersStats) => {
                     const newStats = { ...prevStats };
 
                     if (winner) {
@@ -108,28 +169,31 @@ export const useGameLogic = () => {
                 status: winner ? 'won' : isDraw ? 'draw' : 'playing',
                 moveCount: prev.moveCount + 1,
                 winningCells,
+                settings: prev.settings,
             };
         });
     }, [checkWinner, checkDraw]);
 
     const restartGame = useCallback(() => {
         setGameState({
-            board: INITIAL_BOARD,
+            board: createInitialBoard(settings.boardSize),
             currentPlayer: 'X',
             winner: null,
             isDraw: false,
             status: 'playing',
             moveCount: 0,
             winningCells: [],
+            settings,
         });
-        setHistory([]);
-    }, []);
+    }, [settings]);
 
     const resetStats = useCallback(() => {
-        setPlayerStats({
-            X: { wins: 0, losses: 0, draws: 0, totalMoves: 0 } as PlayerStats,
-            O: { wins: 0, losses: 0, draws: 0, totalMoves: 0 } as PlayerStats,
-        });
+        const emptyStats: PlayersStats = {
+            X: { wins: 0, losses: 0, draws: 0, totalMoves: 0 },
+            O: { wins: 0, losses: 0, draws: 0, totalMoves: 0 },
+        };
+        setPlayerStats(emptyStats);
+        localStorage.setItem(PLAYER_STATS_STORAGE_KEY, JSON.stringify(emptyStats));
         restartGame();
     }, [restartGame]);
 
@@ -140,12 +204,12 @@ export const useGameLogic = () => {
             finalBoard: gameState.board,
             date: new Date().toISOString(),
             moves: gameState.moveCount,
+            settings: gameState.settings,
         };
     }, [gameState]);
 
     return {
         gameState,
-        history,
         playerStats,
         makeMove,
         restartGame,

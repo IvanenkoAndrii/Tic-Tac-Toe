@@ -1,33 +1,41 @@
-import React, { useEffect } from 'react';
-import { Board, GameInfo } from '../../components';
+import React, { useEffect, useState } from 'react';
+import { Board, GameInfo } from '../../components/game';
+import { GameEndModal } from '../../components/common/GameEndModal';
 import { useGameLogic, useGameStorage } from '../../hooks';
+import { useGameSettings } from '../../hooks/useGameSettings';
+import { Modal } from '../../components/common/Modal';
+import { SettingsForm } from '../../components/common/SettingsForm';
 import styles from './GamePage.module.css';
+import { GameResult } from '../../types/game.types';
 
 interface GamePageProps {
     onReturnToMenu: () => void;
-    onGameEnd: (result: any) => void;
+    onGameEnd: (result: GameResult) => void;
 }
 
 const GamePage: React.FC<GamePageProps> = ({ onReturnToMenu, onGameEnd }) => {
+    const { settings, saveSettings, resetSettings } = useGameSettings();
     const {
         gameState,
-        history,
         playerStats,
         makeMove,
         restartGame,
-        resetStats,
         getGameResult,
-    } = useGameLogic();
+    } = useGameLogic(settings);
 
     const { saveGameResult } = useGameStorage();
 
+    const [showGameEndModal, setShowGameEndModal] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+
     useEffect(() => {
         if (gameState.winner || gameState.isDraw) {
-            const result = getGameResult();
-            saveGameResult(result);
             setTimeout(() => {
+                setShowGameEndModal(true);
+                const result = getGameResult();
+                saveGameResult(result);
                 onGameEnd(result);
-            }, 1500);
+            }, 1000);
         }
     }, [gameState.winner, gameState.isDraw, getGameResult, saveGameResult, onGameEnd]);
 
@@ -35,9 +43,21 @@ const GamePage: React.FC<GamePageProps> = ({ onReturnToMenu, onGameEnd }) => {
         makeMove(row, col);
     };
 
-    const formatHistory = (historyItem: any, index: number) => {
-        const [row, col] = historyItem.position;
-        return `${index + 1}. ${historyItem.player} → (${row + 1},${col + 1})`;
+    const handleSettingsSave = (newSettings: any) => {
+        saveSettings(newSettings);
+        setShowSettingsModal(false);
+        restartGame();
+    };
+
+    const handleSettingsReset = () => {
+        resetSettings();
+        setShowSettingsModal(false);
+        restartGame();
+    };
+
+    const handleNewGame = () => {
+        setShowGameEndModal(false);
+        setShowSettingsModal(true);
     };
 
     return (
@@ -51,6 +71,9 @@ const GamePage: React.FC<GamePageProps> = ({ onReturnToMenu, onGameEnd }) => {
                 </button>
                 <h2 className={styles.pageTitle}>
                     {gameState.winner || gameState.isDraw ? 'Гра завершена' : 'Гра триває!'}
+                    <small style={{ fontSize: '0.8rem', display: 'block', marginTop: '5px' }}>
+                        Поле: {settings.boardSize}×{settings.boardSize}
+                    </small>
                 </h2>
             </div>
 
@@ -61,9 +84,9 @@ const GamePage: React.FC<GamePageProps> = ({ onReturnToMenu, onGameEnd }) => {
                         winner={gameState.winner}
                         isDraw={gameState.isDraw}
                         moveCount={gameState.moveCount}
-                        playerStats={playerStats}
+                        playerStats={playerStats}  // ДОДАНО цей рядок
                         onRestart={restartGame}
-                        onReset={resetStats}
+                        onSettingsOpen={() => setShowSettingsModal(true)}
                     />
                     <Board
                         board={gameState.board}
@@ -71,48 +94,34 @@ const GamePage: React.FC<GamePageProps> = ({ onReturnToMenu, onGameEnd }) => {
                         winningCells={gameState.winningCells}
                     />
                 </div>
-
-                <div className={styles.sidebar}>
-                    <div className={styles.playerInfo}>
-                        <h3>Гравець X</h3>
-                        <div className={styles.playerSymbolX}>X</div>
-                        <p className={styles.playerStats}>
-                            Зроблено ходів: {playerStats.X.totalMoves}
-                        </p>
-                        <p className={styles.playerStats}>
-                            Перемог: {playerStats.X.wins}
-                        </p>
-                    </div>
-
-                    <div className={styles.playerInfo}>
-                        <h3>Гравець O</h3>
-                        <div className={styles.playerSymbolO}>O</div>
-                        <p className={styles.playerStats}>
-                            Зроблено ходів: {playerStats.O.totalMoves}
-                        </p>
-                        <p className={styles.playerStats}>
-                            Перемог: {playerStats.O.wins}
-                        </p>
-                    </div>
-
-                    <div className={styles.gameHistory}>
-                        <h3>Історія ходів</h3>
-                        <div className={styles.historyList}>
-                            {history.length > 0 ? (
-                                <ul className={styles.historyItems}>
-                                    {history.slice(-10).map((item, index) => (
-                                        <li key={index} className={styles.historyItem}>
-                                            {formatHistory(item, index)}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className={styles.emptyHistory}>Історія ходів порожня</p>
-                            )}
-                        </div>
-                    </div>
-                </div>
             </div>
+
+            <GameEndModal
+                isOpen={showGameEndModal}
+                onClose={() => setShowGameEndModal(false)}
+                winner={gameState.winner}
+                isDraw={gameState.isDraw}
+                moveCount={gameState.moveCount}
+                onRestart={() => {
+                    setShowGameEndModal(false);
+                    restartGame();
+                }}
+                onNewGame={handleNewGame}
+                onReturnToMenu={onReturnToMenu}
+            />
+
+            <Modal
+                isOpen={showSettingsModal}
+                onClose={() => setShowSettingsModal(false)}
+                title="Налаштування гри"
+            >
+                <SettingsForm
+                    initialSettings={settings}
+                    onSubmit={handleSettingsSave}
+                    onCancel={() => setShowSettingsModal(false)}
+                    onResetToDefault={handleSettingsReset}
+                />
+            </Modal>
         </div>
     );
 };

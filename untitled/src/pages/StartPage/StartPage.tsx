@@ -4,9 +4,15 @@ import styles from './StartPage.module.css';
 
 interface StartPageProps {
     onStartGame: () => void;
+    onOpenSettings: () => void;
+    onOpenHistory: () => void;
 }
 
-const StartPage: React.FC<StartPageProps> = ({ onStartGame }) => {
+const StartPage: React.FC<StartPageProps> = ({
+                                                 onStartGame,
+                                                 onOpenSettings,
+                                                 onOpenHistory
+                                             }) => {
     return (
         <div className={styles.startPage}>
             <div className={styles.hero}>
@@ -37,15 +43,15 @@ const StartPage: React.FC<StartPageProps> = ({ onStartGame }) => {
                     <div className={styles.secondaryControls}>
                         <Button
                             variant="secondary"
-                            onClick={() => console.log('Налаштування')}
+                            onClick={onOpenSettings}
                         >
                             Налаштування
                         </Button>
                         <Button
                             variant="secondary"
-                            onClick={() => console.log('Історія ігор')}
+                            onClick={onOpenHistory}
                         >
-                            Історія ігор
+                            Статистика ігор
                         </Button>
                     </div>
                 </div>

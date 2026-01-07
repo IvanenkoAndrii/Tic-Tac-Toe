@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <footer className={styles.footer}>
                 <div className="container">
                     <p className={styles.footerText}>
-                        Каркас гри "Хрестики-Нулики" - Лабораторна робота №1 | 3-й курс
+                        Каркас гри "Хрестики-Нулики" - 3-й курс
                     </p>
                     <p className={styles.footerSubtext}>
                         React + TypeScript + CSS Modules
